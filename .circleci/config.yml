@@ -1,0 +1,73 @@
+version: 2
+jobs:
+  release:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npm install
+      - run: npx semantic-release
+  test:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npm install
+      - run:
+          name: Run tests
+          command: |
+            npm run test:coverage
+  build:
+    working_directory: /home/circleci/gamerheart
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: npm install
+      - run:
+          name: Build 
+          command: |
+            npm run build
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+              - gamerheart
+  deploy:
+    working_directory: /home/circleci/gamerheart
+    docker:
+      - image: google/cloud-sdk:alpine
+    steps:
+      - attach_workspace:
+          at: /home/circleci/gamerheart
+      - run:
+          name: Authenticate with Google Cloud
+          command: |
+            echo $GCLOUD_KEY_JSON > /home/circleci/.gcloud-key
+            gcloud auth activate-service-account --key-file=/home/circleci/.gcloud-key
+      - run:
+          name: Deploy to Google App Engine
+          command: |
+            cd gamerheart
+            ls -la
+            gcloud config set project e-sports-info
+            gcloud app deploy --quiet
+          working_directory: /home/circleci/gamerheart/
+
+workflows:
+  version: 2
+  release:
+    jobs:
+      - test
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+      - release:
+          requires:
+            - build
+            - test
+          filters:
+            branches:
+              only: master

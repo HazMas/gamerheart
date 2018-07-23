@@ -1,0 +1,31 @@
+{
+  "name": "gamerheart",
+  "version": "0.0.0",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "deploy": "npm run build && gcloud app deploy",
+    "watch": "nodemon src/index.ts --watch src --exec ts-node",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "semantic-release": "semantic-release"
+  },
+  "repository": "https://github.com/HazMas/gamerheart.git",
+  "author": "Santi M.A. <santiagomartinagra@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^23.3.0",
+    "jest": "^23.4.1",
+    "nodemon": "^1.18.3",
+    "prettier": "1.13.7",
+    "semantic-release": "^15.8.1",
+    "ts-jest": "^23.0.1",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.14.0",
+    "typescript": "^2.9.2"
+  }
+}
